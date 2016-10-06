@@ -19,6 +19,8 @@ public class TeamPokemon extends BaseModel implements Serializable {
     @Column
     public int hp;
     @Column
+    public int currenthp;
+    @Column
     public int atk;
     @Column
     public int def;
@@ -28,6 +30,7 @@ public class TeamPokemon extends BaseModel implements Serializable {
     public TeamPokemon(Pokemon pk, int hp, int atk, int def){
         this.basePokemon=pk;
         this.hp=hp;
+        this.currenthp=hp;
         this.atk=atk;
         this.def=def;
     }

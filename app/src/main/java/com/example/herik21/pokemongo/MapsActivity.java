@@ -72,7 +72,8 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
     private ProgressDialog pDialog;
     private ArrayList<WildMarker> wildMarkers = new ArrayList<>();
     private TextView log;
-    private boolean moveCam;
+    private LatLng mLocation;
+    private boolean moveCam, near;
     private boolean doubleBackToExitPressedOnce = false;
 
     @Override
@@ -82,6 +83,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         moveCam = true;
+        near = true;
         log = (TextView)findViewById(R.id.log);
         FlowManager.init(new FlowConfig.Builder(this).openDatabasesOnInit(true).build());
         mApiClient = new GoogleApiClient.Builder(this)
@@ -102,8 +104,17 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
     }
 
     public void append(String entry){
-        String logText = log.getText().toString();
-        log.setText(logText+"\n"+entry);
+        if(entry.equals("wild pokemons near you")){
+            if(near) {
+                String logText = log.getText().toString();
+                log.setText(logText + "\n" + entry);
+            }
+            near=false;
+        }else{
+            String logText = log.getText().toString();
+            log.setText(logText+"\n"+entry);
+            near=true;
+        }
     }
 
     public void onGO(){
@@ -210,6 +221,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
                     .position(location)
                     .title("Trainer"));
         }
+        mLocation = location;
         setWildPokemons();
     }
 
@@ -224,9 +236,11 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
             if (wMarker.visible) {
                 mk.setVisible(true);
                 Pokemon pk = new Select().from(Pokemon.class).where(Pokemon_Table.id.is(wMarker.pkid)).querySingle();
-                mk.setPosition(new LatLng(wMarker.loc[0], wMarker.loc[1]));
-                mk.setTitle(pk.name);
-                new MarkerIconAsyncTask(mk).execute(pk.imgFront);
+                if(pk!=null) {
+                    mk.setPosition(new LatLng(wMarker.loc[0], wMarker.loc[1]));
+                    mk.setTitle(pk.name);
+                    new MarkerIconAsyncTask(mk).execute(pk.imgFront);
+                }
             } else {
                 mk.setVisible(false);
             }
@@ -367,7 +381,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
         }
         @Override
         protected Boolean doInBackground(Void... params) {
-            boolean near =false;
+            boolean near = true;//false;
             double lat = myLocation.getLatitude();
             double lon = myLocation.getLongitude();
             int count=0;
@@ -378,7 +392,9 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
                     count++;
                     Log.d("DISTANCE","Marker with id "+wildpkmn.pkid+" visible, distance "+10000*distance+" visible "+count+" out of "+wildMarkers.size());
                     wildpkmn.visible = true;
-                    near = true;
+                    //near = true;
+                }else if(distance*10000>10){
+                    near = false;
                 }
             }
             return near;
@@ -389,8 +405,15 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
             super.onPostExecute(near);
             if(near){
                 append("wild pokemons near you");
+            }else{
+                requestNewLocation();
             }
         }
+    }
+
+    private void requestNewLocation() {
+        LatLng loc = mLocation;
+        new HttpAsyncTask(loc.latitude,loc.longitude).execute();
     }
 
     private class HttpAsyncTask extends AsyncTask<Void, Void, Void> {

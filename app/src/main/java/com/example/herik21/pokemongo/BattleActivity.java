@@ -24,7 +24,7 @@ public class BattleActivity extends AppCompatActivity {
     public Pokemon bpk;
     public Pokemon wild;
     public int HP;
-    public int wHP,newAtk,newDef;
+    public int twHP,wHP,newAtk,newDef;
     public TextView battleLog;
     public ImageView wildpk;
     public ImageView pkmon;
@@ -45,6 +45,7 @@ public class BattleActivity extends AppCompatActivity {
         wild = (Pokemon) i.getSerializableExtra("wild");
         Random r = new Random();
         wHP = wild.hp_max / 2 + r.nextInt(wild.hp_max / 2);
+        twHP = wHP;
         newAtk = wild.hp_max / 2 + r.nextInt(wild.atk_max / 2);
         newDef = wild.hp_max / 2 + r.nextInt(wild.def_max / 2);
 
@@ -147,6 +148,7 @@ public class BattleActivity extends AppCompatActivity {
     public void prepareToExit(final int i, String message){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(message);
+        builder.setCancelable(false);
         builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
                        boolean lose = true;
@@ -156,7 +158,7 @@ public class BattleActivity extends AppCompatActivity {
                            if(i==3){
                                in.putExtra("captured",wild);
                                in.putExtra("bwild",getIntent().getSerializableExtra("wild"));
-                               in.putExtra("hp",wHP);
+                               in.putExtra("hp",twHP);
                                in.putExtra("atk",newAtk);
                                in.putExtra("def",newDef);
                            }
