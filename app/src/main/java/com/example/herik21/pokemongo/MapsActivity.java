@@ -374,6 +374,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
     }
 
     private class DistanceAsyncTask extends AsyncTask<Void,Void,Boolean>{
+        private static final double REFRESHDISTANCE = 7;
         private Location myLocation;
 
         public DistanceAsyncTask(Location loc){
@@ -388,12 +389,12 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
             for (WildMarker wildpkmn : wildMarkers){
                 double distance = Math.sqrt(Math.pow(lat - wildpkmn.loc[0], 2) + Math.pow(lon - wildpkmn.loc[1], 2));
                 Log.d("DISTANCE","distance "+10000*distance);
-                if(distance*10000<=5){
+                if(distance*10000<=REFRESHDISTANCE){
                     count++;
                     Log.d("DISTANCE","Marker with id "+wildpkmn.pkid+" visible, distance "+10000*distance+" visible "+count+" out of "+wildMarkers.size());
                     wildpkmn.visible = true;
                     near = true;
-                }else if(distance*10000>5){
+                }else if(distance*10000>REFRESHDISTANCE){
                     wildpkmn.visible = false;
                     near = false;
                 }
