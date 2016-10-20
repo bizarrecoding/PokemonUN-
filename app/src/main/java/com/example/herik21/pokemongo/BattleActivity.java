@@ -39,7 +39,7 @@ public class BattleActivity extends AppCompatActivity {
         pkmon  = (ImageView) findViewById(R.id.mypkmn);
         pk = (TeamPokemon) i.getSerializableExtra("pokemon");
         bpk = pk.basePokemon;
-        HP = pk.hp;
+        HP = pk.currenthp;
 
         wildpk = (ImageView) findViewById(R.id.wild);
         wild = (Pokemon) i.getSerializableExtra("wild");

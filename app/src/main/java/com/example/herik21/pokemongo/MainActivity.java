@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
     public static String getPokemons(){
         String response = "";
         try{
-            URL url = new URL("http://realizzazione-sito.tk/dev/service/pokemonGo.json");
+            URL url = new URL("http://190.144.171.172/proyectoMovil/pokemonlist17.php");
             URLConnection uc = url.openConnection();
             BufferedReader in = new BufferedReader(new InputStreamReader(uc.getInputStream()));
             String result = "";

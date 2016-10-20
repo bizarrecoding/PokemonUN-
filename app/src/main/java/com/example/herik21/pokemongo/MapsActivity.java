@@ -381,7 +381,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
         }
         @Override
         protected Boolean doInBackground(Void... params) {
-            boolean near = true;//false;
+            boolean near = false;
             double lat = myLocation.getLatitude();
             double lon = myLocation.getLongitude();
             int count=0;
@@ -392,8 +392,9 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
                     count++;
                     Log.d("DISTANCE","Marker with id "+wildpkmn.pkid+" visible, distance "+10000*distance+" visible "+count+" out of "+wildMarkers.size());
                     wildpkmn.visible = true;
-                    //near = true;
-                }else if(distance*10000>10){
+                    near = true;
+                }else if(distance*10000>5){
+                    wildpkmn.visible = false;
                     near = false;
                 }
             }
@@ -406,6 +407,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
             if(near){
                 append("wild pokemons near you");
             }else{
+                Log.d("REQUESTLOC","requesting more wild pkmons (near = "+near+")");
                 requestNewLocation();
             }
         }
@@ -447,7 +449,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
                         String lt = stop.getString("lt");
                         String lng = stop.getString("lng");
                         double[] loc = {Double.parseDouble(lt), Double.parseDouble(lng)};
-                        wildMarkers.add(new WildMarker(r.nextInt(10),loc,false));
+                        wildMarkers.add(new WildMarker(r.nextInt(16),loc,false));
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
